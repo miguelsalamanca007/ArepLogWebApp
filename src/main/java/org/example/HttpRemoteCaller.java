@@ -10,11 +10,11 @@ import java.net.URL;
 public class HttpRemoteCaller {
 
     private static final String USER_AGENT = "Mozilla/5.0";
-    private static final String GET_URL = "http://localhost:4568/logString?value=hola";
+    private static final String GET_URL = "http://logger-service1:4568/logString?value=hola";
 
-    public String logString(String string) throws IOException {
+    public String logString(String url, String value) throws IOException {
 
-        URL obj = new URL(GET_URL);
+        URL obj = new URL(url+value);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("User-Agent", USER_AGENT);
@@ -22,7 +22,7 @@ public class HttpRemoteCaller {
         //The following invocation perform the connection implicitly before getting the code
         int responseCode = con.getResponseCode();
 
-        System.out.println("URL: " + GET_URL);
+        System.out.println("URL: " + url);
 
         System.out.println("GET Response Code :: " + responseCode);
 
@@ -37,13 +37,15 @@ public class HttpRemoteCaller {
             }
             in.close();
             // print result
-            System.out.println(response.toString());
+            System.out.println("THE RESPONSE IS: " + response.toString());
 
             return response.toString();
         } else {
             System.out.println("GET request not worked");
         }
         System.out.println("GET DONE");
+
+        System.out.println("IM RETURNING NULL");
 
         return null;
     }
