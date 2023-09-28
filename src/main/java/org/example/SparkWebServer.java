@@ -1,8 +1,6 @@
 package org.example;
 
 import static spark.Spark.*;
-import org.example.WebServices;
-
 
 public class SparkWebServer {
 
@@ -11,14 +9,14 @@ public class SparkWebServer {
     private static String[] urls = {"http://logger-service1:4568/logString?value=", "http://logger-service2:4568/logString?value=", "http://logger-service3:4568/logString?value="};
 
     public static void main(String... args) {
-        WebServices webServices = new WebServices();
         HttpRemoteCaller remoteCaller = new HttpRemoteCaller();
         port(getPort());
         staticFiles.location("/public");
         get("sendString", (req, res) -> {
-            String value = req.queryParams("value");
+            String value = req.queryParams("value").replace(" ", "%20");
             String url = getUrl();
-            System.out.println("The current url is: " + url);
+            System.out.println("The current value is: " + value);
+            System.out.println("The current url is: " + url+value);
             String response = remoteCaller.logString(url, value);
             return response;
         });
