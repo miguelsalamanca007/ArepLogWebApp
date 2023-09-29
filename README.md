@@ -1,90 +1,105 @@
-# Project Title
+# Architectural Patterns
 
-> [!WARNING]  
-> Critical content demanding immediate user attention due to potential risks.
+The application is a website where the user can enter messages in a form and send them. Upon sending, the web page displays a list of the last 10 messages sent along with the date they were sent.
 
-One Paragraph of project description goes here
+### Architecture
 
-## Getting Started
+##### AppLB-RoundRobin
+The web application APP-LB-RoundRobin consists of a web client and a REST service. The web client has a field and a button, and whenever the user sends a message, it sends it to the REST service and updates the screen with the information returned in JSON format. The REST service receives the string and implements a Round Robin load balancing algorithm, delegating the processing of the message and the return of the response to each of the three instances of the LogService service.
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+##### Log Service
+LogService is a REST service that receives a string, stores it in the database, and responds with a JSON object containing the last 10 strings stored in the database along with the date they were stored.
+
+##### MongoDB 
+The MongoDB service is an instance of a MongoDB database, it stores the messages sent by the log service and the date they were stored.
+
+### Image of the architecture
+
+![image](architecture.png)
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+To run the software you will need to have these installed in your machine:
 
-```
-Give examples
-```
+* [Java](https://www.java.com/)
+* [Maven](https://maven.apache.org/)
+* [Docker](https://www.docker.com/)
+
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+In order to install de program, follow the next steps:
 
-Say what the step will be
+Clone both the repositories that make up the application:
 
-```
-Give the example
-```
-
-And repeat
+Log Service
 
 ```
-until finished
+git clone https://github.com/miguelsalamanca007/ArepLogService.git
 ```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
+AppLB RoundRobin
 ```
-Give an example
+git clone https://github.com/miguelsalamanca007/ArepLogWebApp.git
+``` 
+Locate yourself in the directory where you cloned one of the projects in and run
 ```
-
-### And coding style tests
-
-Explain what these tests test and why
-
+mvn clean install
 ```
-Give an example
+Repeat the same step for the other project
+
+#### Building the Docker images
+
+to build the docker images, run the following command (you have to be located in the project directory)
+Log Service
 ```
+docker build --tag logger-service . -f dockerfileservice
+```
+Now locate yourself in the AppLB RoundRobin directory and run
+```
+docker build --tag logger-webapp . -f dockerfilewebapp
+```
+#### Running the project
 
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
+To run the project, execute the following commands:
+```
+docker network create my_network
+```
+```
+docker run -d -p 36001:4568 --name logger-service1 --network my_network logger-service
+```
+```
+docker run -d -p 36002:4568 --name logger-service2 --network my_network logger-service
+```
+```
+docker run -d -p 36003:4568 --name logger-service3 --network my_network logger-service
+```
+```
+docker run -d -p 36000:4567 --name logger-webapp --network my_network logger-webapp
+```
+```
+docker run -d -p 27017:27017 -v mongodb:/data/db -v mongodb_config:/data/configdb --name db --network my_network mongo:3.6.1 mongod
+```
+After that, you should be able to enter the webpage in the following url
+```
+http://localhost:36000/app.html
+```
+Image of what you will see
+![deploy](deployment.png)
+### Video of the application deployed
+[This is a video of the application running on AWS](linl)
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
+* [Java](https://www.java.com/) - The programming language used
+* [HTML](https://html.com/document/) - The markup language used for the home's page structure
+* [JavaScript](https://www.javascript.com/) - The programming language used for the front's page logic
+* [CSS](https://developer.mozilla.org/es/docs/Web/CSS) - The style language used
 * [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+* [Docker](https://www.docker.com/) - Container Management
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+I use [Git](https://git-scm.com/) for versioning.
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* **Miguel Angel Salamanca**  - [GitHub](https://github.com/miguelsalamanca007) - [LinkedIn](https://www.linkedin.com/in/miguel-%C3%A1ngel-salamanca-alarc%C3%B3n-714956265/)
