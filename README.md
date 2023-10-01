@@ -86,7 +86,7 @@ http://localhost:36000/app.html
 Image of what you will see
 ![deploy](deployment.png)
 ### Video of the application deployed
-[This is a video of the application running on AWS](linl)
+[This is a video of the application running on AWS](https://www.youtube.com/watch?v=eyEpf8nGEJo)
 ## Built With
 
 * [Java](https://www.java.com/) - The programming language used
